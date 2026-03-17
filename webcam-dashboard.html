@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>STARGATE — Rete Universitaria</title>
+  <title>UNIGATE — Rete Universitaria</title>
 
   <!-- Applica il tema PRIMA del rendering per evitare flash -->
   <script>
@@ -21,10 +21,10 @@
 <body>
 
 <!-- ══════════════════════════════════════════════
-     ANIMAZIONE DI AVVIO STARGATE
+     ANIMAZIONE DI AVVIO UNIGATE
      Rimossa automaticamente da JS dopo ~4.4s
      ══════════════════════════════════════════════ -->
-<div id="stargate-intro">
+<div id="unigate-intro">
 
   <div class="sg-portal">
     <!-- SVG: cerchi concentrici con archi rotanti -->
@@ -62,8 +62,8 @@
     <div class="sg-core"></div>
   </div>
 
-  <!-- Testo STARGATE -->
-  <div class="sg-text">STARGATE</div>
+  <!-- Testo UNIGATE -->
+  <div class="sg-text">UNIGATE</div>
   <div class="sg-subtitle">INIZIALIZZAZIONE CONNESSIONE</div>
 
 </div>
@@ -83,9 +83,9 @@
       <div class="host-logo-fallback">UdA</div>
     </div>
     <div class="host-info">
-      <div class="stargate-name">
-        <span class="stargate-icon"></span>
-        STARGATE
+      <div class="unigate-name">
+        <span class="unigate-icon"></span>
+        UNIGATE
       </div>
       <div class="host-name">Università D'Annunzio · Chieti / Pescara</div>
     </div>
@@ -106,18 +106,14 @@
 <main id="grid"></main>
 
 <!-- ══════════════════════════════════════════════
-     FOCUS CONTROLS — navigazione rotazione
+     FOCUS TIMER — barra + countdown rotazione
      Visibile solo con ?layout=focus
      ══════════════════════════════════════════════ -->
-<div id="focus-controls">
-  <button id="focus-prev">&#8249;</button>
-  <div id="focus-info">
-    <span id="focus-city"></span>
-    <span id="focus-univ"></span>
-    <span id="focus-progress"></span>
-  </div>
-  <button id="focus-next">&#8250;</button>
+<div id="focus-timer">
+  <div id="focus-bar-wrap"><div id="focus-bar-fill"></div></div>
+  <span id="focus-timer-label"></span>
 </div>
+<div id="focus-countdown"></div>
 
 <!-- ══════════════════════════════════════════════
      FOOTER: stats | ticker | temi | layout | [▼]
@@ -178,7 +174,7 @@
 
     </div>
 
-    <div class="footer-brand">STARGATE NETWORK · RETE UNIVERSITARIA EUROPEA</div>
+    <div class="footer-brand">UNIGATE NETWORK · RETE UNIVERSITARIA EUROPEA</div>
 
   </div><!-- /footer-content -->
 

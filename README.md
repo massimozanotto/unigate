@@ -1,4 +1,4 @@
-# Stargate - Video Surveillance Dashboard
+# Unigate - Video Surveillance Dashboard
 
 Una dashboard per il monitoraggio video con supporto per HLS streaming e visualizzazione multi-camera.
 

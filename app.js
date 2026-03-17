@@ -1,29 +1,58 @@
 /* ══════════════════════════════════════════════
-   STARGATE — Applicazione principale
+   UNIGATE — Applicazione principale
    Dipende da: config.js, hls.js
    ══════════════════════════════════════════════ */
 
 const params = new URLSearchParams(window.location.search);
 
 /* ── Stazione ospitante (?host=) ──────────────── */
+// hostId è a livello di modulo: usato anche da buildGrid/buildPartnerLogos/focus
+const hostId = (params.get('host') && HOSTS[params.get('host')])
+  ? params.get('host')
+  : DEFAULT_HOST;
+
 function initHost() {
-  const hostId = (params.get('host') && HOSTS[params.get('host')])
-    ? params.get('host')
-    : DEFAULT_HOST;
   const host = HOSTS[hostId];
   if (!host) return;
 
-  const img         = document.querySelector('.host-logo-wrap img');
-  const fallback    = document.querySelector('.host-logo-fallback');
-  const nameEl      = document.querySelector('.host-name');
+  const img      = document.querySelector('.host-logo-wrap img');
+  const fallback = document.querySelector('.host-logo-fallback');
+  const nameEl   = document.querySelector('.host-name');
 
-  if (img) {
-    img.src = host.logo || '';
-    img.alt = host.name;
-  }
+  if (img) { img.src = host.logo || ''; img.alt = host.name; }
   if (fallback) fallback.textContent = hostId.slice(0, 3).toUpperCase();
   if (nameEl)   nameEl.textContent   = `${host.name} · ${host.subtitle}`;
 }
+
+/* ── Tema ─────────────────────────────────────── */
+const VALID_THEMES = ['dark', 'void', 'blue', 'light', 'steel', 'uda'];
+
+function applyTheme(theme) {
+  if (!VALID_THEMES.includes(theme)) return;
+  document.documentElement.setAttribute('data-theme', theme);
+  document.querySelectorAll('.theme-btn').forEach(btn =>
+    btn.classList.toggle('active', btn.dataset.theme === theme)
+  );
+  const p = new URLSearchParams(window.location.search);
+  p.set('theme', theme);
+  history.replaceState(null, '', '?' + p.toString());
+}
+
+document.querySelectorAll('.theme-btn').forEach(btn =>
+  btn.addEventListener('click', () => applyTheme(btn.dataset.theme))
+);
+
+/* ── Footer collassabile ──────────────────────── */
+(function initFooterToggle() {
+  const footer = document.querySelector('footer');
+  const toggle = document.getElementById('footer-toggle');
+  if (!footer || !toggle) return;
+  if (localStorage.getItem('footer-collapsed') === '1') footer.classList.add('collapsed');
+  toggle.addEventListener('click', () => {
+    footer.classList.toggle('collapsed');
+    localStorage.setItem('footer-collapsed', footer.classList.contains('collapsed') ? '1' : '0');
+  });
+})();
 
 /* ── Layout ───────────────────────────────────── */
 const VALID_LAYOUTS = ['grid', 'featured', 'focus'];
@@ -35,6 +64,9 @@ function applyLayout(layout) {
   document.querySelectorAll('.layout-btn').forEach(btn =>
     btn.classList.toggle('active', btn.dataset.layout === layout)
   );
+  const p = new URLSearchParams(window.location.search);
+  p.set('layout', layout);
+  history.replaceState(null, '', '?' + p.toString());
   if (layout === 'focus') {
     startFocus();
   } else {
@@ -76,6 +108,7 @@ function setStatus(idx, state) {
 function buildPartnerLogos() {
   const container = document.getElementById('partner-logos');
   CAMERAS.forEach((cam, idx) => {
+    if (cam.id === hostId) return;  // l'host appare nell'header, non nei badge
     const card = document.createElement('div');
     card.className = 'partner-card';
     card.id = `badge-${idx}`;
@@ -99,27 +132,34 @@ function buildPartnerLogos() {
 /* ── Build: griglia celle ─────────────────────── */
 function buildGrid() {
   const grid = document.getElementById('grid');
-  document.getElementById('stat-total').textContent = CAMERAS.length;
+  const visibleCams = CAMERAS.filter(c => c.id !== hostId);
 
-  // Camera "featured" — priorità a ?featured=id, poi a featured:true in config, poi prima
+  document.getElementById('stat-total').textContent = visibleCams.length;
+
+  // Camera "featured" — priorità a ?featured=id, poi a featured:true in config, poi prima visibile
   const featuredParam = params.get('featured');
-  const featuredId = CAMERAS.find(c => c.id === featuredParam)?.id
-    ?? CAMERAS.find(c => c.featured)?.id
-    ?? CAMERAS[0].id;
+  const featuredId = visibleCams.find(c => c.id === featuredParam)?.id
+    ?? visibleCams.find(c => c.featured)?.id
+    ?? visibleCams[0]?.id;
 
-  // Camera di partenza per il focus — priorità a ?focus=id
+  // Camera di partenza per il focus — priorità a ?focus=id, deve essere non-host
   const focusParam = params.get('focus');
-  const focusStartIdx = Math.max(0, CAMERAS.findIndex(c => c.id === focusParam));
-  focusIdx = focusStartIdx;
+  const focusStartIdx = (() => {
+    const i = CAMERAS.findIndex(c => c.id === focusParam && c.id !== hostId);
+    return i >= 0 ? i : CAMERAS.findIndex(c => c.id !== hostId);
+  })();
+  focusIdx = Math.max(0, focusStartIdx);
 
   // CSS custom property per le righe del sidebar in focus mode
-  grid.style.setProperty('--cam-count-minus1', CAMERAS.length - 1);
+  grid.style.setProperty('--cam-count-minus1', visibleCams.length - 1);
 
+  let cellOrder = 0;
   CAMERAS.forEach((cam, idx) => {
+    if (cam.id === hostId) return;  // l'host non appare nella griglia
     const cell = document.createElement('div');
     cell.className = 'cam-cell' + (cam.id === featuredId ? ' cam-main' : '');
     cell.id = `cell-${idx}`;
-    cell.style.setProperty('--i', idx);
+    cell.style.setProperty('--i', cellOrder++);
 
     cell.innerHTML = `
       <video id="vid-${idx}" autoplay muted playsinline></video>
@@ -171,6 +211,8 @@ function initCamera(idx) {
   const cam   = CAMERAS[idx];
   const video = document.getElementById(`vid-${idx}`);
   const ph    = document.getElementById(`ph-${idx}`);
+
+  if (!video || !ph) return;  // camera non in DOM (es. host corrente)
 
   if (hlsInstances[idx]) { hlsInstances[idx].destroy(); delete hlsInstances[idx]; }
 
@@ -229,13 +271,20 @@ function showOffline(idx, msg) {
   document.getElementById(`ph-err-${idx}`).textContent = msg || '';
 }
 
-/* ── Modalità Focus (rotazione + sidebar) ─────── */
-let focusIdx   = 0;
-let focusTimer = null;
+/* ── Modalità Focus (rotazione + sidebar + countdown) ── */
+let focusIdx        = 0;
+let focusTimer      = null;
+let focusSecondsLeft = FOCUS_INTERVAL;
 
 function startFocus() {
+  focusSecondsLeft = FOCUS_INTERVAL;
   showFocusCell(focusIdx);
-  focusTimer = setInterval(advanceFocus, FOCUS_INTERVAL * 1000);
+  resetTimerBar();
+  focusTimer = setInterval(() => {
+    focusSecondsLeft--;
+    updateTimerLabel();
+    if (focusSecondsLeft <= 0) advanceFocus();
+  }, 1000);
 }
 
 function stopFocus() {
@@ -244,35 +293,48 @@ function stopFocus() {
 }
 
 function advanceFocus() {
-  focusIdx = (focusIdx + 1) % CAMERAS.length;
+  do { focusIdx = (focusIdx + 1) % CAMERAS.length; }
+  while (CAMERAS[focusIdx].id === hostId);
+  focusSecondsLeft = FOCUS_INTERVAL;
   showFocusCell(focusIdx);
+  resetTimerBar();
 }
 
 function showFocusCell(idx) {
   document.querySelectorAll('.cam-cell').forEach(c => c.classList.remove('focus-active'));
   document.getElementById(`cell-${idx}`)?.classList.add('focus-active');
-
-  const cam = CAMERAS[idx];
-  document.getElementById('focus-city').textContent     = cam.id.charAt(0).toUpperCase() + cam.id.slice(1);
-  document.getElementById('focus-univ').textContent     = cam.label;
-  document.getElementById('focus-progress').textContent = `${idx + 1} / ${CAMERAS.length}`;
 }
 
 function resetFocusTimer() {
   if (focusTimer) clearInterval(focusTimer);
-  focusTimer = setInterval(advanceFocus, FOCUS_INTERVAL * 1000);
+  focusSecondsLeft = FOCUS_INTERVAL;
+  resetTimerBar();
+  focusTimer = setInterval(() => {
+    focusSecondsLeft--;
+    updateTimerLabel();
+    if (focusSecondsLeft <= 0) advanceFocus();
+  }, 1000);
 }
 
-document.getElementById('focus-prev').addEventListener('click', () => {
-  focusIdx = (focusIdx - 1 + CAMERAS.length) % CAMERAS.length;
-  showFocusCell(focusIdx);
-  resetFocusTimer();
-});
-document.getElementById('focus-next').addEventListener('click', () => {
-  focusIdx = (focusIdx + 1) % CAMERAS.length;
-  showFocusCell(focusIdx);
-  resetFocusTimer();
-});
+function resetTimerBar() {
+  const fill = document.getElementById('focus-bar-fill');
+  if (!fill) return;
+  fill.style.animation = 'none';
+  fill.offsetWidth; // force reflow
+  fill.style.animation = `focus-bar-drain ${FOCUS_INTERVAL}s linear forwards`;
+  updateTimerLabel();
+}
+
+function updateTimerLabel() {
+  const secs = Math.max(0, focusSecondsLeft);
+  const el = document.getElementById('focus-timer-label');
+  if (el) el.textContent = secs + 's';
+  const cd = document.getElementById('focus-countdown');
+  if (cd) {
+    cd.textContent = secs;
+    cd.classList.toggle('urgent', secs <= 3);
+  }
+}
 
 /* ── Modal fullscreen ─────────────────────────── */
 const modal      = document.getElementById('modal');
@@ -336,8 +398,18 @@ document.addEventListener('keydown', e => {
     if (modal.classList.contains('open')) { closeModal(); return; }
   }
   if (currentLayout === 'focus') {
-    if (e.key === 'ArrowLeft')  document.getElementById('focus-prev').click();
-    if (e.key === 'ArrowRight') document.getElementById('focus-next').click();
+    if (e.key === 'ArrowLeft') {
+      do { focusIdx = (focusIdx - 1 + CAMERAS.length) % CAMERAS.length; }
+      while (CAMERAS[focusIdx].id === hostId);
+      showFocusCell(focusIdx);
+      resetFocusTimer();
+    }
+    if (e.key === 'ArrowRight') {
+      do { focusIdx = (focusIdx + 1) % CAMERAS.length; }
+      while (CAMERAS[focusIdx].id === hostId);
+      showFocusCell(focusIdx);
+      resetFocusTimer();
+    }
   }
 });
 
@@ -381,7 +453,7 @@ function buildTicker() {
 
 /* ── Rimozione overlay intro ──────────────────── */
 function removeIntro() {
-  const intro = document.getElementById('stargate-intro');
+  const intro = document.getElementById('unigate-intro');
   if (intro) intro.remove();
 }
 // rimosso con un piccolo buffer dopo la fine dell'animazione CSS (~4s)
@@ -399,10 +471,14 @@ setInterval(() => {
   const layoutParam = params.get('layout');
   const layout = VALID_LAYOUTS.includes(layoutParam) ? layoutParam : DEFAULT_LAYOUT;
 
+  const themeParam = params.get('theme');
+  const theme = VALID_THEMES.includes(themeParam) ? themeParam : DEFAULT_THEME;
+
   initHost();
   buildPartnerLogos();
   buildGrid();
   buildTicker();
+  applyTheme(theme);
   applyLayout(layout);
-  CAMERAS.forEach((_, idx) => initCamera(idx));
+  CAMERAS.forEach((cam, idx) => { if (cam.id !== hostId) initCamera(idx); });
 })();

@@ -1,5 +1,5 @@
 /* ══════════════════════════════════════════════
-   STARGATE — Configurazione
+   UNIGATE — Configurazione
    Modifica questo file per aggiornare sedi,
    stazione ospitante, messaggi e parametri.
    ══════════════════════════════════════════════ */
@@ -13,7 +13,7 @@
    ─────────────────────────────────────────────── */
 const CAMERAS = [
   { id: 'parigi',    label: 'Université Paris Cité',     tz: 'Europe/Paris',     featured: true,  url: 'https://cdn-008.whatsupcams.com/hls/it_gorizia06.m3u8' },
-  { id: 'uda',    label: 'Università D\'Annunzio',     tz: 'Europe/Rome',                       url: 'https://cdn-006.whatsupcams.com/hls/it_kronplatz07.m3u8' },
+  { id: 'uda',       label: 'Università DAnnunzio',   tz: 'Europe/Rome',                       url: 'https://cdn-006.whatsupcams.com/hls/it_kronplatz07.m3u8' },
   { id: 'madrid',    label: 'Universidad Complutense',   tz: 'Europe/Madrid',                     url: 'https://5e0add8153fcd.streamlock.net:1936/vedetta/levanto.stream/playlist.m3u8' },
   { id: 'stoccolma', label: 'Stockholm University',      tz: 'Europe/Stockholm',                  url: 'https://cdn-008.whatsupcams.com/hls/si_ngorica03.m3u8' },
   { id: 'berlino',   label: 'Freie Universität Berlin',  tz: 'Europe/Berlin',                     url: 'https://cdn-007.whatsupcams.com/hls/hr_bol05.m3u8' },
@@ -89,10 +89,10 @@ const HOSTS = {
 
 /* ── Messaggi ticker footer ─────────────────────── */
 const TICKER_MESSAGES = [
-  'Benvenuti nella Rete STARGATE — Connettere le università europee dal campus di Chieti · Pescara',
-  'Progetto STARGATE — Cooperazione accademica e mobilità internazionale',
+  'Benvenuti nella Rete UNIGATE — Connettere le università europee dal campus di Chieti · Pescara',
+  'Progetto UNIGATE — Cooperazione accademica e mobilità internazionale',
   'Università degli Studi «G. d\'Annunzio» — Chieti · Pescara',
-  'Rete STARGATE: Parigi · Madrid · Stoccolma · Berlino · Praga · Lisbona · Zurigo · Londra · Dublino',
+  'Rete UNIGATE: Parigi · Madrid · Stoccolma · Berlino · Praga · Lisbona · Zurigo · Londra · Dublino',
 ];
 
 /* ── Parametri layout ────────────────────────────
@@ -104,4 +104,4 @@ const TICKER_MESSAGES = [
 const DEFAULT_HOST    = 'uda';
 const DEFAULT_THEME   = 'steel';
 const DEFAULT_LAYOUT  = 'grid';
-const FOCUS_INTERVAL  = 10;
+const FOCUS_INTERVAL  = 20;
