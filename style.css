@@ -270,16 +270,12 @@ header {
 
 /* ── Sinistra ── */
 .header-host {
-  display: flex;
-  align-items: center;
   gap: 14px;
 }
 
 .host-logo-wrap {
   height: 50px;
   flex-shrink: 0;
-  display: flex;
-  align-items: center;
 }
 .host-logo-wrap img {
   max-height: 50px;
@@ -297,7 +293,6 @@ header {
   color: var(--accent);
 }
 
-.host-info { display: flex; flex-direction: column; gap: 4px; }
 
 .unigate-name {
   font-family: 'Lato', serif;
@@ -347,10 +342,8 @@ header {
 
 /* ── Centro: orologio ── */
 .header-clock {
-  text-align: center;
   line-height: 1.1;
   padding: 0;
-  flex-shrink: 0;
 }
 #clock {
   font-family: 'Inconsolata', monospace;
@@ -372,30 +365,20 @@ header {
 
 /* ── Destra: partner cards ── */
 .header-partners {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 8px;
-  overflow: hidden;
   min-width: 0;
 }
 
 .partner-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
   gap: 3px;
   padding: 4px 6px;
   min-width: 52px;
   max-width: 68px;
   position: relative;
-  flex-shrink: 0;
   cursor: default;
 }
 
 .partner-logo-area {
   height: 36px;
-  display: flex; align-items: center; justify-content: center;
   width: 100%;
 }
 .partner-logo-area img {
@@ -871,7 +854,7 @@ footer.collapsed .footer-content {
 #footer-toggle svg { transition: transform .3s ease; display: block; }
 footer.collapsed #footer-toggle svg { transform: rotate(180deg); }
 
-.stat { display: flex; align-items: center; gap: 5px; flex-shrink: 0; }
+.stat { gap: 5px; }
 .stat span { color: var(--text); font-weight: 500; }
 
 .ticker-wrap {
@@ -897,9 +880,7 @@ footer.collapsed #footer-toggle svg { transform: rotate(180deg); }
 }
 
 /* ── Theme switcher ── */
-
-/* ── Theme switcher ── */
-.theme-switcher { display: flex; gap: 6px; align-items: center; flex-shrink: 0; }
+.theme-switcher { gap: 6px; }
 
 .theme-btn {
   width: 22px; height: 22px;
@@ -918,7 +899,6 @@ footer.collapsed #footer-toggle svg { transform: rotate(180deg); }
 .theme-btn[data-theme="dark"]     { background: linear-gradient(135deg, #050505 55%, #707070 55%); }
 
 /* ── Layout switcher ── */
-.layout-switcher { display: flex; gap: 4px; align-items: center; flex-shrink: 0; }
 .layout-btn {
   background: transparent; border: 1px solid var(--border); color: var(--muted);
   width: 26px; height: 26px; border-radius: 3px;

@@ -76,8 +76,8 @@
      ══════════════════════════════════════════════ -->
 <header>
 
-  <div class="header-host">
-    <div class="host-logo-wrap">
+  <div class="header-host d-flex align-items-center">
+    <div class="host-logo-wrap d-flex align-items-center">
       <img
         src="https://www.unich.it/sites/default/files/logouda_bordooro_bis.png"
         alt="Università D'Annunzio"
@@ -85,7 +85,7 @@
       />
       <div class="host-logo-fallback">UdA</div>
     </div>
-    <div class="host-info">
+    <div class="host-info d-flex flex-column gap-1">
       <div class="unigate-name">
         <span class="unigate-icon"></span>UNI<span class="gate">GATE</span>
       </div>
@@ -93,9 +93,9 @@
     </div>
   </div>
 
-  <div class="header-partners" id="partner-logos"></div>
+  <div class="header-partners d-flex align-items-center justify-content-start gap-2 overflow-hidden" id="partner-logos"></div>
 
-  <div class="header-clock">
+  <div class="header-clock text-center">
     <div id="clock">--:--:--</div>
     <div id="date-str">---</div>
   </div>
@@ -130,22 +130,22 @@
 
   <div class="footer-content" id="footer-content">
 
-    <div class="stat" id="stat-connected-label">— <span id="stat-live">0</span>/<span id="stat-total">0</span></div>
-    <div class="stat" id="stat-unavailable-label">— <span id="stat-err">0</span></div>
+    <div class="stat d-flex align-items-center flex-shrink-0" id="stat-connected-label">— <span id="stat-live">0</span>/<span id="stat-total">0</span></div>
+    <div class="stat d-flex align-items-center flex-shrink-0" id="stat-unavailable-label">— <span id="stat-err">0</span></div>
 
     <div class="ticker-wrap">
       <div class="ticker-track" id="ticker-track"></div>
     </div>
 
     <!-- Selezione tema -->
-    <div class="theme-switcher" id="theme-switcher">
+    <div class="theme-switcher d-flex align-items-center flex-shrink-0" id="theme-switcher">
       <button class="theme-btn" data-theme="light"    title="light"></button>
       <button class="theme-btn" data-theme="standard" title="standard"></button>
       <button class="theme-btn" data-theme="dark"     title="dark"></button>
     </div>
 
     <!-- Selezione layout -->
-    <div class="layout-switcher">
+    <div class="layout-switcher d-flex align-items-center gap-1 flex-shrink-0">
 
       <button class="layout-btn" data-layout="grid" id="btn-layout-grid">
         <svg width="13" height="13" viewBox="0 0 13 13" fill="currentColor">

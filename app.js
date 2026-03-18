@@ -229,14 +229,14 @@ function buildPartnerLogos() {
   CAMERAS.forEach((cam, idx) => {
     if (cam.id === hostId) return;  // l'host appare nell'header, non nei badge
     const card = document.createElement('div');
-    card.className = 'partner-card';
+    card.className = 'partner-card d-flex flex-column align-items-center flex-shrink-0';
     card.id = `badge-${idx}`;
     card.setAttribute('data-state', 'loading');
     card.title = cam.label;
 
     const logoSrc = cam.logo || `logos/${cam.id}.svg`;
     card.innerHTML = `
-      <div class="partner-logo-area">
+      <div class="partner-logo-area d-flex align-items-center justify-content-center">
         <img src="${logoSrc}" alt="${cam.id}"
              onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
         <span class="partner-abbr-lg" style="display:none">${cam.id.slice(0, 3).toUpperCase()}</span>
