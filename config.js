@@ -12,78 +12,83 @@
              (solo una dovrebbe averlo, altrimenti vince la prima trovata)
    ─────────────────────────────────────────────── */
 const CAMERAS = [
-  { id: 'parigi',    label: 'Université Paris Cité',     tz: 'Europe/Paris',     featured: true,  url: 'https://cdn-008.whatsupcams.com/hls/it_gorizia06.m3u8' },
-  { id: 'uda',       label: 'Università DAnnunzio',   tz: 'Europe/Rome',                       url: 'https://cdn-006.whatsupcams.com/hls/it_kronplatz07.m3u8' },
-  { id: 'madrid',    label: 'Universidad Complutense',   tz: 'Europe/Madrid',                     url: 'https://5e0add8153fcd.streamlock.net:1936/vedetta/levanto.stream/playlist.m3u8' },
-  { id: 'stoccolma', label: 'Stockholm University',      tz: 'Europe/Stockholm',                  url: 'https://cdn-008.whatsupcams.com/hls/si_ngorica03.m3u8' },
-  { id: 'berlino',   label: 'Freie Universität Berlin',  tz: 'Europe/Berlin',                     url: 'https://cdn-007.whatsupcams.com/hls/hr_bol05.m3u8' },
-  { id: 'praga',     label: 'Charles University',        tz: 'Europe/Prague',                     url: 'https://cdn-006.whatsupcams.com/hls/si_ngbevkovtrg.m3u8' },
-  { id: 'lisbona',   label: 'Universidade de Lisboa',    tz: 'Europe/Lisbon',                     url: 'https://cdn-002.whatsupcams.com/hls/hr_bol04.m3u8' },
-  { id: 'zurigo',    label: 'Universität Zürich',        tz: 'Europe/Zurich',                     url: 'https://cdn-008.whatsupcams.com/hls/it_anterselva04.m3u8' },
-  { id: 'london',    label: 'University College London', tz: 'Europe/London',                     url: 'https://cdn-005.whatsupcams.com/hls/it_palau05.m3u8' },
-  { id: 'dublin',    label: 'University College Dublin', tz: 'Europe/Dublin',                     url: 'https://cdn-005.whatsupcams.com/hls/it_caorle10.m3u8' },
+  { id: 'uda',        label: "Università D'Annunzio",                  country: 'IT', tz: 'Europe/Rome',     featured: true, url: 'https://cdn-006.whatsupcams.com/hls/it_kronplatz07.m3u8' },
+  { id: 'cork',       label: 'Munster Technological University',        country: 'IE', tz: 'Europe/Dublin',           url: 'https://cdn-008.whatsupcams.com/hls/it_gorizia06.m3u8' },
+  { id: 'skovde',     label: 'University of Skövde',                   country: 'SE', tz: 'Europe/Stockholm',        url: 'https://5e0add8153fcd.streamlock.net:1936/vedetta/levanto.stream/playlist.m3u8' },
+  { id: 'mikkeli',    label: 'South-Eastern Finland University',        country: 'FI', tz: 'Europe/Helsinki',         url: 'https://cdn-008.whatsupcams.com/hls/si_ngorica03.m3u8' },
+  { id: 'rouen',      label: 'University of Rouen',                    country: 'FR', tz: 'Europe/Paris',            url: 'https://cdn-007.whatsupcams.com/hls/hr_bol05.m3u8' },
+  { id: 'karlsruhe',  label: 'University of Applied Sciences',         country: 'DE', tz: 'Europe/Berlin',           url: 'https://cdn-006.whatsupcams.com/hls/si_ngbevkovtrg.m3u8' },
+  { id: 'lasi',       label: 'Gheorghe Asachi Technical University',   country: 'RO', tz: 'Europe/Bucharest',        url: 'https://cdn-002.whatsupcams.com/hls/hr_bol04.m3u8' },
+  { id: 'sofia',      label: 'Medical University Sofia',               country: 'BG', tz: 'Europe/Sofia',            url: 'https://cdn-008.whatsupcams.com/hls/it_anterselva04.m3u8' },
+  { id: 'oviedo',     label: 'University of Oviedo',                   country: 'ES', tz: 'Europe/Madrid',           url: 'https://cdn-005.whatsupcams.com/hls/it_palau05.m3u8' },
 ];
 
 /* ── Stazioni ospitanti ──────────────────────────
+   Ogni chiave DEVE corrispondere a un id in CAMERAS.
    Selezionabile con ?host=<id>
-   Ogni record definisce il logo e il nome
-   che appaiono a SINISTRA nell'header.
-   ─────────────────────────────────────────────── */
-/* ── Stazioni ospitanti ──────────────────────────
-   Ogni chiave DEVE corrispondere a un id in CAMERAS
-   (o a 'uda' per la sede host del progetto).
-   Selezionabile con ?host=<id>
+   sponsors : lista sponsor visibili nella riga sponsor
+     name  : nome testuale (fallback se no logo)
+     logo  : percorso immagine
+     url   : link al click (opzionale)
    ─────────────────────────────────────────────── */
 const HOSTS = {
   uda: {
     name:     "Università D'Annunzio",
-    subtitle: 'Chieti · Pescara',
+    subtitle: 'Chieti · Pescara, Italy',
     logo:     'https://www.unich.it/sites/default/files/logouda_bordooro_bis.png',
+    sponsors: [
+      { name: 'Biblos',          logo: 'sponsors/logo-biblos.png',           url: 'https://www.bibloservice.com' },
+      { name: 'B-Link',          logo: 'sponsors/logo-b-link.png',           url: 'https://www.b-link.it' },
+      { name: 'Regione Abruzzo', logo: 'sponsors/logo-regione-abruzzo.svg',  url: 'https://www.regione.abruzzo.it' },
+    ],
   },
-  parigi: {
-    name:     'Université Paris Cité',
-    subtitle: 'Paris, France',
-    logo:     'logos/parigi.svg',
+  cork: {
+    name:     'Munster Technological University',
+    subtitle: 'Cork, Ireland',
+    logo:     'logos/cork.svg',
+    sponsors: [],
   },
-  madrid: {
-    name:     'Universidad Complutense',
-    subtitle: 'Madrid, España',
-    logo:     'logos/madrid.svg',
+  skovde: {
+    name:     'University of Skövde',
+    subtitle: 'Skövde, Sweden',
+    logo:     'logos/skovde.svg',
+    sponsors: [],
   },
-  stoccolma: {
-    name:     'Stockholm University',
-    subtitle: 'Stockholm, Sverige',
-    logo:     'logos/stoccolma.svg',
+  mikkeli: {
+    name:     'South-Eastern Finland University',
+    subtitle: 'Mikkeli, Finland',
+    logo:     'logos/mikkeli.svg',
+    sponsors: [],
   },
-  berlino: {
-    name:     'Freie Universität Berlin',
-    subtitle: 'Berlin, Deutschland',
-    logo:     'logos/berlino.svg',
+  rouen: {
+    name:     'University of Rouen',
+    subtitle: 'Rouen, France',
+    logo:     'logos/rouen.svg',
+    sponsors: [],
   },
-  praga: {
-    name:     'Charles University',
-    subtitle: 'Prague, Česká republika',
-    logo:     'logos/praga.svg',
+  karlsruhe: {
+    name:     'University of Applied Sciences',
+    subtitle: 'Karlsruhe, Germany',
+    logo:     'logos/karlsruhe.svg',
+    sponsors: [],
   },
-  lisbona: {
-    name:     'Universidade de Lisboa',
-    subtitle: 'Lisboa, Portugal',
-    logo:     'logos/lisbona.svg',
+  lasi: {
+    name:     'Gheorghe Asachi Technical University',
+    subtitle: 'Iași, Romania',
+    logo:     'logos/lasi.svg',
+    sponsors: [],
   },
-  zurigo: {
-    name:     'Universität Zürich',
-    subtitle: 'Zürich, Schweiz',
-    logo:     'logos/zurigo.svg',
+  sofia: {
+    name:     'Medical University Sofia',
+    subtitle: 'Sofia, Bulgaria',
+    logo:     'logos/sofia.svg',
+    sponsors: [],
   },
-  london: {
-    name:     'University College London',
-    subtitle: 'London, UK',
-    logo:     'logos/london.svg',
-  },
-  dublin: {
-    name:     'University College Dublin',
-    subtitle: 'Dublin, Ireland',
-    logo:     'logos/dublin.svg',
+  oviedo: {
+    name:     'University of Oviedo',
+    subtitle: 'Oviedo, Spain',
+    logo:     'logos/oviedo.svg',
+    sponsors: [],
   },
 };
 
@@ -92,16 +97,26 @@ const TICKER_MESSAGES = [
   'Benvenuti nella Rete UNIGATE — Connettere le università europee dal campus di Chieti · Pescara',
   'Progetto UNIGATE — Cooperazione accademica e mobilità internazionale',
   'Università degli Studi «G. d\'Annunzio» — Chieti · Pescara',
-  'Rete UNIGATE: Parigi · Madrid · Stoccolma · Berlino · Praga · Lisbona · Zurigo · Londra · Dublino',
+  'Rete UNIGATE: Cork · Skövde · Mikkeli · Rouen · Karlsruhe · Iași · Sofia · Oviedo',
 ];
 
 /* ── Parametri layout ────────────────────────────
-   DEFAULT_HOST     : stazione ospitante  (?host=)
-   DEFAULT_THEME    : tema colori         (?theme=)
-   DEFAULT_LAYOUT   : layout griglia      (?layout=)
-   FOCUS_INTERVAL   : secondi per camera in modalità rotazione
+   DEFAULT_HOST       : stazione ospitante  (?host=)
+   DEFAULT_THEME      : tema colori         (?theme=)
+   DEFAULT_LAYOUT     : layout griglia      (?layout=)
+   FOCUS_INTERVAL     : secondi per camera in modalità rotazione
+   BG_PARTICLES       : numero di punti animati sullo sfondo (max ~150)
+   SHOW_FOCUS_BAR        : mostra la barra di avanzamento in modalità focus
+   SHOW_FOCUS_COUNTER    : mostra la cifra countdown in modalità focus
+   SHOW_SPONSORS         : mostra la riga sponsor
+   SPONSORS_LABEL_POS    : posizione label "SPONSOR" — 'top' | 'left'
    ─────────────────────────────────────────────── */
-const DEFAULT_HOST    = 'uda';
-const DEFAULT_THEME   = 'steel';
-const DEFAULT_LAYOUT  = 'grid';
-const FOCUS_INTERVAL  = 20;
+const DEFAULT_HOST       = 'uda';
+const DEFAULT_THEME      = 'standard';
+const DEFAULT_LAYOUT     = 'grid';
+const FOCUS_INTERVAL     = 20;
+const BG_PARTICLES       = 500;
+const SHOW_FOCUS_BAR     = true;
+const SHOW_FOCUS_COUNTER = true;
+const SHOW_SPONSORS      = true;
+const SPONSORS_LABEL_POS = 'top';   // 'top' | 'left'

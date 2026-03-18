@@ -11,6 +11,117 @@ const hostId = (params.get('host') && HOSTS[params.get('host')])
   ? params.get('host')
   : DEFAULT_HOST;
 
+/* ── Background immagine per host ─────────────── */
+function initBackground() {
+  const base     = `backgrounds/${hostId}_bg`;
+  const fallback = 'backgrounds/default_bg';
+  const candidates = [`${base}.png`, `${base}.jpg`, `${fallback}.png`, `${fallback}.jpg`];
+
+  const apply = src => {
+    document.body.style.backgroundImage     = `url('${src}')`;
+    document.body.style.backgroundSize      = 'auto';
+    document.body.style.backgroundPosition  = '0 0';
+    document.body.style.backgroundAttachment = 'fixed';
+  };
+
+  function tryNext(list) {
+    if (!list.length) return;
+    const [first, ...rest] = list;
+    const img = new Image();
+    img.onload  = () => apply(first);
+    img.onerror = () => tryNext(rest);
+    img.src = first;
+  }
+
+  tryNext(candidates);
+}
+
+/* ── Sfondo animato (canvas particelle) ───────── */
+function initBgCanvas() {
+  const canvas = document.getElementById('bg-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+
+  let W, H;
+  function resize() {
+    W = canvas.width  = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  // Legge una variabile CSS dal root
+  function cssVar(name) {
+    return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  }
+
+  // Converte colore hex o rgb(...) in [r,g,b]
+  function parseColor(str) {
+    if (str.startsWith('#')) {
+      let h = str.slice(1);
+      if (h.length === 3) h = h.split('').map(c => c + c).join('');
+      const n = parseInt(h, 16);
+      return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+    }
+    const m = str.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
+    return m ? [+m[1], +m[2], +m[3]] : [0, 0, 0];
+  }
+
+  const COUNT    = BG_PARTICLES;
+  const MAX_DIST = 130;
+
+  const pts = Array.from({ length: COUNT }, () => ({
+    x:  Math.random() * window.innerWidth,
+    y:  Math.random() * window.innerHeight,
+    vx: (Math.random() - .5) * .45,
+    vy: (Math.random() - .5) * .45,
+    r:  Math.random() * 1.6 + .7,
+  }));
+
+  function frame() {
+    const accent = parseColor(cssVar('--accent'));
+
+    // Pulisce il frame lasciando trasparente il canvas (mostra il background sotto)
+    ctx.clearRect(0, 0, W, H);
+
+    // Aggiorna posizioni (wrap ai bordi)
+    for (const p of pts) {
+      p.x += p.vx;  p.y += p.vy;
+      if (p.x < 0) p.x = W; else if (p.x > W) p.x = 0;
+      if (p.y < 0) p.y = H; else if (p.y > H) p.y = 0;
+    }
+
+    // Linee tra particelle vicine
+    ctx.lineWidth = .7;
+    for (let i = 0; i < pts.length; i++) {
+      for (let j = i + 1; j < pts.length; j++) {
+        const dx = pts[i].x - pts[j].x;
+        const dy = pts[i].y - pts[j].y;
+        const d  = Math.sqrt(dx * dx + dy * dy);
+        if (d < MAX_DIST) {
+          ctx.strokeStyle = `rgba(${accent},${ (1 - d / MAX_DIST) * .22 })`;
+          ctx.beginPath();
+          ctx.moveTo(pts[i].x, pts[i].y);
+          ctx.lineTo(pts[j].x, pts[j].y);
+          ctx.stroke();
+        }
+      }
+    }
+
+    // Punti
+    for (const p of pts) {
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(${accent},.55)`;
+      ctx.fill();
+    }
+
+    requestAnimationFrame(frame);
+  }
+
+  frame();
+}
+
 function initHost() {
   const host = HOSTS[hostId];
   if (!host) return;
@@ -24,8 +135,9 @@ function initHost() {
   if (nameEl)   nameEl.textContent   = `${host.name} · ${host.subtitle}`;
 }
 
+
 /* ── Tema ─────────────────────────────────────── */
-const VALID_THEMES = ['dark', 'void', 'blue', 'light', 'steel', 'uda'];
+const VALID_THEMES = ['light', 'standard', 'dark'];
 
 function applyTheme(theme) {
   if (!VALID_THEMES.includes(theme)) return;
@@ -48,6 +160,13 @@ document.querySelectorAll('.theme-btn').forEach(btn =>
   const toggle = document.getElementById('footer-toggle');
   if (!footer || !toggle) return;
   if (localStorage.getItem('footer-collapsed') === '1') footer.classList.add('collapsed');
+
+  const updateFooterH = () =>
+    document.documentElement.style.setProperty('--footer-h', footer.offsetHeight + 'px');
+
+  new ResizeObserver(updateFooterH).observe(footer);
+  updateFooterH();
+
   toggle.addEventListener('click', () => {
     footer.classList.toggle('collapsed');
     localStorage.setItem('footer-collapsed', footer.classList.contains('collapsed') ? '1' : '0');
@@ -272,15 +391,41 @@ function showOffline(idx, msg) {
 }
 
 /* ── Modalità Focus (rotazione + sidebar + countdown) ── */
-let focusIdx        = 0;
-let focusTimer      = null;
+let focusIdx         = 0;
+let focusTimer       = null;
 let focusSecondsLeft = FOCUS_INTERVAL;
+let focusLocked      = false;
+
+function setFocusTimerVisible(visible) {
+  if (SHOW_FOCUS_BAR)     document.getElementById('focus-timer').style.display     = visible ? '' : 'none';
+  if (SHOW_FOCUS_COUNTER) document.getElementById('focus-countdown').style.display = visible ? '' : 'none';
+}
+
+function toggleFocusLock() {
+  focusLocked = !focusLocked;
+  const btn = document.getElementById('focus-lock-btn');
+  if (btn) btn.classList.toggle('locked', focusLocked);
+  if (focusLocked) {
+    if (focusTimer) { clearInterval(focusTimer); focusTimer = null; }
+    setFocusTimerVisible(false);
+  } else {
+    setFocusTimerVisible(true);
+    resetFocusTimer();
+  }
+}
+
+document.getElementById('focus-lock-btn').addEventListener('click', toggleFocusLock);
 
 function startFocus() {
+  focusLocked = false;
+  const btn = document.getElementById('focus-lock-btn');
+  if (btn) btn.classList.remove('locked');
   focusSecondsLeft = FOCUS_INTERVAL;
   showFocusCell(focusIdx);
   resetTimerBar();
+  setFocusTimerVisible(true);
   focusTimer = setInterval(() => {
+    if (focusLocked) return;
     focusSecondsLeft--;
     updateTimerLabel();
     if (focusSecondsLeft <= 0) advanceFocus();
@@ -289,10 +434,14 @@ function startFocus() {
 
 function stopFocus() {
   if (focusTimer) { clearInterval(focusTimer); focusTimer = null; }
+  focusLocked = false;
+  const btn = document.getElementById('focus-lock-btn');
+  if (btn) btn.classList.remove('locked');
   document.querySelectorAll('.cam-cell').forEach(c => c.classList.remove('focus-active'));
 }
 
 function advanceFocus() {
+  if (focusLocked) return;
   do { focusIdx = (focusIdx + 1) % CAMERAS.length; }
   while (CAMERAS[focusIdx].id === hostId);
   focusSecondsLeft = FOCUS_INTERVAL;
@@ -300,9 +449,24 @@ function advanceFocus() {
   resetTimerBar();
 }
 
+const COUNTRY_NAMES = {
+  IT: 'Italy', IE: 'Ireland', SE: 'Sweden',  FI: 'Finland',
+  FR: 'France', DE: 'Germany', RO: 'Romania', BG: 'Bulgaria',
+  ES: 'Spain',  PT: 'Portugal', CZ: 'Czech Republic', CH: 'Switzerland',
+  GB: 'United Kingdom', AT: 'Austria', NL: 'Netherlands', BE: 'Belgium',
+};
+
 function showFocusCell(idx) {
   document.querySelectorAll('.cam-cell').forEach(c => c.classList.remove('focus-active'));
   document.getElementById(`cell-${idx}`)?.classList.add('focus-active');
+
+  const cam = CAMERAS[idx];
+  const el  = document.getElementById('focus-label');
+  if (el && cam) {
+    const countryName = cam.country ? (COUNTRY_NAMES[cam.country] ?? cam.country) : '';
+    el.innerHTML = cam.label
+      + (countryName ? `<span class="focus-label-country">\u2014 ${countryName} \u2014</span>` : '');
+  }
 }
 
 function resetFocusTimer() {
@@ -451,6 +615,57 @@ function buildTicker() {
   track.style.animationDuration = `${duration}s`;
 }
 
+/* ── Riga sponsor ─────────────────────────────── */
+function buildSponsors() {
+  const row = document.getElementById('sponsors-row');
+  if (!row) return;
+  row.innerHTML = '';
+
+  if (!SHOW_SPONSORS) { row.style.display = 'none'; return; }
+
+  row.classList.toggle('label-left', SPONSORS_LABEL_POS === 'left');
+
+  const label = document.createElement('span');
+  label.id = 'sponsors-label';
+  label.textContent = 'SPONSORED BY';
+  row.appendChild(label);
+
+  const sponsors = HOSTS[hostId]?.sponsors || [];
+  if (!sponsors.length) return;
+
+  const logos = document.createElement('div');
+  logos.className = 'sponsor-logos';
+  row.appendChild(logos);
+
+  sponsors.forEach(s => {
+    const item = document.createElement('div');
+    item.className = 'sponsor-item';
+
+    let inner;
+    if (s.logo) {
+      const img = document.createElement('img');
+      img.src   = s.logo;
+      img.alt   = s.name || '';
+      img.title = s.name || '';
+      if (s.url) {
+        inner = document.createElement('a');
+        inner.href   = s.url;
+        inner.target = '_blank';
+        inner.rel    = 'noopener noreferrer';
+        inner.appendChild(img);
+      } else {
+        inner = img;
+      }
+    } else if (s.name) {
+      inner = document.createElement('span');
+      inner.className   = 'sponsor-item-name';
+      inner.textContent = s.name;
+    }
+    if (inner) item.appendChild(inner);
+    logos.appendChild(item);
+  });
+}
+
 /* ── Rimozione overlay intro ──────────────────── */
 function removeIntro() {
   const intro = document.getElementById('unigate-intro');
@@ -474,10 +689,15 @@ setInterval(() => {
   const themeParam = params.get('theme');
   const theme = VALID_THEMES.includes(themeParam) ? themeParam : DEFAULT_THEME;
 
+  initBackground();
+  initBgCanvas();
   initHost();
   buildPartnerLogos();
   buildGrid();
   buildTicker();
+  buildSponsors();
+  if (!SHOW_FOCUS_BAR)     document.getElementById('focus-timer').style.display     = 'none';
+  if (!SHOW_FOCUS_COUNTER) document.getElementById('focus-countdown').style.display = 'none';
   applyTheme(theme);
   applyLayout(layout);
   CAMERAS.forEach((cam, idx) => { if (cam.id !== hostId) initCamera(idx); });
