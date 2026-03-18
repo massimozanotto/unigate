@@ -500,17 +500,17 @@ function updateTimerLabel() {
   }
 }
 
-/* ── Modal fullscreen ─────────────────────────── */
+/* ── Modal fullscreen — Bootstrap Modal ───────── */
 const modal      = document.getElementById('modal');
 const modalVideo = document.getElementById('modal-video');
 const modalLabel = document.getElementById('modal-label');
+const modalBody  = modal.querySelector('.modal-body');
 let   modalHls   = null;
 
 function openModal(idx) {
   const cam = CAMERAS[idx];
   if (!cam.url || camStates[idx] === 'unconfigured') return;
 
-  modal.classList.add('open');
   modalLabel.textContent = `${cam.id.toUpperCase()} — ${cam.label}`;
 
   if (modalHls) { modalHls.destroy(); modalHls = null; }
@@ -518,17 +518,16 @@ function openModal(idx) {
   if (cam.type === 'mjpeg') {
     modalVideo.src = '';
     modalVideo.style.display = 'none';
-    let mimg = modal.querySelector('img.modal-img');
+    let mimg = modalBody.querySelector('img.modal-img');
     if (!mimg) {
       mimg = document.createElement('img');
       mimg.className = 'modal-img';
-      mimg.style.cssText = 'max-width:90vw;max-height:85vh;border:1px solid var(--accent);border-radius:4px;';
-      modal.insertBefore(mimg, modalLabel);
+      modalBody.insertBefore(mimg, modalVideo);
     }
     mimg.src = cam.url;
   } else {
     modalVideo.style.display = '';
-    modal.querySelector('img.modal-img')?.remove();
+    modalBody.querySelector('img.modal-img')?.remove();
     if (Hls.isSupported()) {
       modalHls = new Hls({ lowLatencyMode: true });
       modalHls.loadSource(cam.url);
@@ -539,17 +538,20 @@ function openModal(idx) {
       modalVideo.play().catch(() => {});
     }
   }
+
+  bootstrap.Modal.getOrCreateInstance(modal).show();
 }
 
 const closeModal = () => {
-  modal.classList.remove('open');
+  bootstrap.Modal.getInstance(modal)?.hide();
+};
+
+/* Cleanup stream quando il modal è completamente nascosto */
+modal.addEventListener('hide.bs.modal', () => {
   if (modalHls) { modalHls.destroy(); modalHls = null; }
   modalVideo.src = '';
   modalVideo.pause();
-};
-
-document.getElementById('modal-close').addEventListener('click', closeModal);
-modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
+});
 
 /* ── Layout switcher (pulsanti UI) ───────────── */
 document.querySelectorAll('.layout-btn').forEach(btn => {
@@ -558,9 +560,6 @@ document.querySelectorAll('.layout-btn').forEach(btn => {
 
 /* ── Tastiera ─────────────────────────────────── */
 document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') {
-    if (modal.classList.contains('open')) { closeModal(); return; }
-  }
   if (currentLayout === 'focus') {
     if (e.key === 'ArrowLeft') {
       do { focusIdx = (focusIdx - 1 + CAMERAS.length) % CAMERAS.length; }
