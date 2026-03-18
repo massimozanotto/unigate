@@ -289,7 +289,7 @@ function buildGrid() {
         </svg>
         <div class="offline-msg" id="ph-msg-${idx}">CONNESSIONE NON DISPONIBILE</div>
         <div class="err-msg" id="ph-err-${idx}"></div>
-        <button class="retry-btn" onclick="initCamera(${idx})">↺ RICONNETTI</button>
+        <button class="retry-btn" onclick="initCamera(${idx})">${t('reconnect')}</button>
       </div>
       <div class="hud">
         <div class="hud-top">
@@ -297,7 +297,7 @@ function buildGrid() {
           <div class="cam-label">${cam.id.toUpperCase()}</div>
           <div class="hud-tz" id="tz-${idx}"></div>
         </div>
-        <div class="hud-live">IN DIRETTA</div>
+        <div class="hud-live">${t('live')}</div>
         <div class="hud-bottom">${cam.label}</div>
         <div class="corner tl"></div>
         <div class="corner tr"></div>
@@ -342,8 +342,8 @@ function initCamera(idx) {
   if (!cam.url) {
     ph.style.display    = 'flex';
     video.style.display = 'none';
-    document.getElementById(`ph-msg-${idx}`).textContent = 'URL NON CONFIGURATO';
-    document.getElementById(`ph-err-${idx}`).textContent = `Inserisci l'URL in CAMERAS[${idx}] in config.js`;
+    document.getElementById(`ph-msg-${idx}`).textContent = t('url_missing_msg');
+    document.getElementById(`ph-err-${idx}`).textContent = t('url_missing_hint', { idx });
     setStatus(idx, 'unconfigured');
     return;
   }
@@ -386,7 +386,7 @@ function showOffline(idx, msg) {
   const video = document.getElementById(`vid-${idx}`);
   ph.style.display    = 'flex';
   video.style.display = 'none';
-  document.getElementById(`ph-msg-${idx}`).textContent = 'CONNESSIONE NON DISPONIBILE';
+  document.getElementById(`ph-msg-${idx}`).textContent = t('offline_msg');
   document.getElementById(`ph-err-${idx}`).textContent = msg || '';
 }
 
@@ -627,7 +627,7 @@ function buildSponsors() {
 
   const label = document.createElement('span');
   label.id = 'sponsors-label';
-  label.textContent = 'SPONSORED BY';
+  label.textContent = t('sponsored_by');
   row.appendChild(label);
 
   const sponsors = HOSTS[hostId]?.sponsors || [];
@@ -688,6 +688,33 @@ setInterval(() => {
 
   const themeParam = params.get('theme');
   const theme = VALID_THEMES.includes(themeParam) ? themeParam : DEFAULT_THEME;
+
+  /* ── Stringhe i18n negli elementi statici HTML ── */
+  const elSub = document.getElementById('sg-subtitle');
+  if (elSub) elSub.textContent = t('intro_subtitle');
+
+  const elConn = document.getElementById('stat-connected-label');
+  if (elConn) elConn.firstChild.textContent = t('stat_connected') + ' ';
+
+  const elUnavail = document.getElementById('stat-unavailable-label');
+  if (elUnavail) elUnavail.firstChild.textContent = t('stat_unavailable') + ' ';
+
+  const btnGrid     = document.getElementById('btn-layout-grid');
+  const btnFeatured = document.getElementById('btn-layout-featured');
+  const btnFocus    = document.getElementById('btn-layout-focus');
+  if (btnGrid)     btnGrid.title     = t('layout_grid');
+  if (btnFeatured) btnFeatured.title = t('layout_featured');
+  if (btnFocus)    btnFocus.title    = t('layout_focus');
+
+  const btnLock   = document.getElementById('focus-lock-btn');
+  const btnToggle = document.getElementById('footer-toggle');
+  if (btnLock)   btnLock.title   = t('lock_rotation');
+  if (btnToggle) btnToggle.title = t('toggle_footer');
+
+  document.querySelectorAll('.theme-btn').forEach(btn => {
+    const k = 'theme_' + btn.dataset.theme;
+    btn.title = t(k);
+  });
 
   initBackground();
   initBgCanvas();

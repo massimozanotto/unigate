@@ -65,8 +65,8 @@
   </div>
 
   <!-- Testo UNIGATE -->
-  <div class="sg-text">UNI<span class="gate">GATE</span></div>
-  <div class="sg-subtitle">INIZIALIZZAZIONE CONNESSIONE</div>
+  <div class="sg-text">UNIGATE</div>
+  <div class="sg-subtitle" id="sg-subtitle"></div>
 
 </div>
 
@@ -86,19 +86,18 @@
     </div>
     <div class="host-info">
       <div class="unigate-name">
-        <span class="unigate-icon"></span>
-        UNI<span class="gate">GATE</span>
+        <span class="unigate-icon"></span>UNI<span class="gate">GATE</span>
       </div>
       <div class="host-name">Università D'Annunzio · Chieti / Pescara</div>
     </div>
   </div>
 
+  <div class="header-partners" id="partner-logos"></div>
+
   <div class="header-clock">
     <div id="clock">--:--:--</div>
     <div id="date-str">---</div>
   </div>
-
-  <div class="header-partners" id="partner-logos"></div>
 
 </header>
 
@@ -130,8 +129,8 @@
 
   <div class="footer-content" id="footer-content">
 
-    <div class="stat">CONNESSE <span id="stat-live">0</span>/<span id="stat-total">0</span></div>
-    <div class="stat">NON DISP. <span id="stat-err">0</span></div>
+    <div class="stat" id="stat-connected-label">— <span id="stat-live">0</span>/<span id="stat-total">0</span></div>
+    <div class="stat" id="stat-unavailable-label">— <span id="stat-err">0</span></div>
 
     <div class="ticker-wrap">
       <div class="ticker-track" id="ticker-track"></div>
@@ -147,7 +146,7 @@
     <!-- Selezione layout -->
     <div class="layout-switcher">
 
-      <button class="layout-btn" data-layout="grid" title="Griglia 3×3">
+      <button class="layout-btn" data-layout="grid" id="btn-layout-grid">
         <svg width="13" height="13" viewBox="0 0 13 13" fill="currentColor">
           <rect x="0" y="0" width="5" height="5" rx="1"/>
           <rect x="8" y="0" width="5" height="5" rx="1"/>
@@ -156,7 +155,7 @@
         </svg>
       </button>
 
-      <button class="layout-btn" data-layout="featured" title="In evidenza — 1 grande + 8 piccoli">
+      <button class="layout-btn" data-layout="featured" id="btn-layout-featured">
         <svg width="13" height="13" viewBox="0 0 13 13" fill="currentColor">
           <rect x="0" y="0" width="8" height="8" rx="1"/>
           <rect x="9" y="0" width="4" height="4" rx="1"/>
@@ -167,7 +166,7 @@
         </svg>
       </button>
 
-      <button class="layout-btn" data-layout="focus" title="Rotazione — 1 grande + sidebar">
+      <button class="layout-btn" data-layout="focus" id="btn-layout-focus">
         <svg width="13" height="13" viewBox="0 0 13 13" fill="currentColor">
           <rect x="0" y="0" width="8" height="13" rx="1"/>
           <rect x="9" y="0" width="4" height="3" rx="1"/>
@@ -209,9 +208,10 @@
   <video id="modal-video" autoplay muted playsinline controls></video>
 </div>
 
-<!-- Ordine obbligatorio: hls → config → app -->
+<!-- Ordine obbligatorio: hls → config → i18n → app -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.4.12/hls.min.js"></script>
 <script src="config.js"></script>
+<script src="i18n.js"></script>
 <script src="app.js"></script>
 
 </body>

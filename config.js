@@ -34,7 +34,7 @@ const CAMERAS = [
 const HOSTS = {
   uda: {
     name:     "Università D'Annunzio",
-    subtitle: 'Chieti · Pescara, Italy',
+    subtitle: 'Chieti · Pescara',
     logo:     'https://www.unich.it/sites/default/files/logouda_bordooro_bis.png',
     sponsors: [
       { name: 'Biblos',          logo: 'sponsors/logo-biblos.png',           url: 'https://www.bibloservice.com' },
@@ -120,3 +120,4 @@ const SHOW_FOCUS_BAR     = true;
 const SHOW_FOCUS_COUNTER = true;
 const SHOW_SPONSORS      = true;
 const SPONSORS_LABEL_POS = 'top';   // 'top' | 'left'
+const DEFAULT_LANG       = 'it';    // 'en' | 'it' | ... (vedi i18n.js)

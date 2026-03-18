@@ -153,6 +153,8 @@
   font-weight: 600;
   font-size: 2.6rem;
   letter-spacing: .45em;
+  --wordmark-ls: .45em;
+  padding-left: .45em; /* bilancia il letter-spacing trailing per centrare visivamente */
   color: var(--accent);
   text-shadow: 0 0 24px color-mix(in srgb, var(--accent) 70%, transparent);
   overflow: hidden;
@@ -163,10 +165,12 @@
   to { clip-path: inset(0 0% 0 0); }
 }
 
-/* "GATE" — porzione evidenziabile di UNIGATE */
+/* "GATE" — porzione evidenziabile di UNIGATE
+   margin-left negativo annulla il letter-spacing aggiunto dopo l'ultima "I" dal parent */
 .gate {
-  color: var(--accent);
-  font-weight: 700;
+  color: cornflowerblue;
+  margin-left: calc(-1 * var(--wordmark-ls, 0em));
+  font-weight: 900;
 }
 
 .sg-subtitle {
@@ -174,6 +178,7 @@
   font-size: .72rem;
   color: var(--accent);
   letter-spacing: .35em;
+  padding-left: .35em; /* bilancia il letter-spacing trailing */
   opacity: 0;
   animation: sg-fade-in .6s ease 2s forwards;
 }
@@ -211,7 +216,7 @@ body {
 
 header {
   display: grid;
-  grid-template-columns: auto auto 1fr;
+  grid-template-columns: auto 1fr auto;
   align-items: center;
   gap: 16px;
   padding: 8px 20px;
@@ -254,12 +259,13 @@ header {
 .host-info { display: flex; flex-direction: column; gap: 4px; }
 
 .unigate-name {
-  font-family: 'EB Garamond', serif;
-  font-weight: 600;
+  font-family: 'Lato', serif;
+  font-weight: 100;
   font-size: 1.3rem;
   letter-spacing: .22em;
+  --wordmark-ls: .22em;
   color: var(--accent);
-  display: flex; align-items: center; gap: 10px;
+  display: flex; align-items: center; gap: 5px;
   line-height: 1;
 }
 
@@ -269,6 +275,7 @@ header {
   border-radius: 50%;
   position: relative;
   flex-shrink: 0;
+  display: none;
 }
 .unigate-icon::after {
   content: '';
@@ -284,8 +291,8 @@ header {
 }
 
 .host-name {
-  font-size: .7rem; font-weight: 300;
-  color: var(--muted);
+  font-size: .9rem; font-weight: 300;
+  color: var(--text);
   letter-spacing: .05em;
 }
 
@@ -301,7 +308,7 @@ header {
 .header-clock {
   text-align: center;
   line-height: 1.1;
-  padding: 0 24px;
+  padding: 0;
   flex-shrink: 0;
 }
 #clock {
@@ -326,7 +333,7 @@ header {
 .header-partners {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: flex-start;
   gap: 8px;
   overflow: hidden;
   min-width: 0;
@@ -588,13 +595,13 @@ main {
   align-items: center;
   gap: 10px;
   padding: 8px 24px 12px;
-  border-top: 1px solid var(--border);
+  /*border-top: 1px solid var(--border);*/
   flex-shrink: 0;
   position: relative;
   z-index: 1;
-  background: rgba(0,0,0,.55);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+ /* background: rgba(0,0,0,.55);*/
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
 }
 
 /* label a sinistra: riga orizzontale */
@@ -618,7 +625,7 @@ main {
 
 /* separatore verticale tra sponsor */
 .sponsor-item + .sponsor-item {
-  border-left: 1px solid var(--border);
+  border-left: 1px solid var(--ok);
   margin-left: 24px;
   padding-left: 24px;
 }
@@ -648,13 +655,25 @@ main {
   letter-spacing: .1em;
 }
 #sponsors-label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
   font-family: 'Lato', sans-serif;
   font-weight: 700;
   font-size: .6rem;
-  color: var(--muted);
+  color: var(--ok);
   letter-spacing: .28em;
+  padding-left: .28em; /* bilancia letter-spacing trailing */
   text-transform: uppercase;
-  flex-shrink: 0;
+  white-space: nowrap;
+}
+#sponsors-label::before,
+#sponsors-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--ok);
 }
 
 /* ══════════════════════════════════════════════════════════════
@@ -784,7 +803,7 @@ main {
    ══════════════════════════════════════════════════════════════ */
 
 footer {
-  border-top: 1px solid var(--border);
+  /*border-top: 1px solid var(--border);*/
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
@@ -911,7 +930,7 @@ footer.collapsed #footer-toggle svg { transform: rotate(180deg); }
 
 .footer-brand {
   font-family: 'Lato', sans-serif; font-weight: 300;
-  font-size: .56rem; letter-spacing: .1em; opacity: .4; color: var(--text); flex-shrink: 0;
+  font-size: .56rem; letter-spacing: .1em; --wordmark-ls: .1em; opacity: .4; color: var(--text); flex-shrink: 0;
 }
 
 /* ══════════════════════════════════════════════════════════════
