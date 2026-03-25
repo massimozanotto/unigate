@@ -21,6 +21,7 @@ const CAMERAS = [
   { id: 'lasi',       label: 'Gheorghe Asachi Technical University',   country: 'RO', tz: 'Europe/Bucharest',        url: 'https://cdn-002.whatsupcams.com/hls/hr_bol04.m3u8' },
   { id: 'sofia',      label: 'Medical University Sofia',               country: 'BG', tz: 'Europe/Sofia',            url: 'https://cdn-008.whatsupcams.com/hls/it_anterselva04.m3u8' },
   { id: 'oviedo',     label: 'University of Oviedo',                   country: 'ES', tz: 'Europe/Madrid',           url: 'https://cdn-005.whatsupcams.com/hls/it_palau05.m3u8' },
+  { id: 'crete',      label: 'University of Crete',                    country: 'GR', tz: 'Europe/Athens',           url: '' },
 ];
 
 /* ── Stazioni ospitanti ──────────────────────────
@@ -37,9 +38,11 @@ const HOSTS = {
     subtitle: 'Chieti · Pescara',
     logo:     'https://www.unich.it/sites/default/files/logouda_bordooro_bis.png',
     sponsors: [
+      { name: 'Regione Abruzzo', logo: 'sponsors/regione-abruzzo.png',  url: 'https://www.regione.abruzzo.it' },
+      { name: 'Regione Abruzzo', logo: 'sponsors/provincia-chieti.png',  url: 'https://www.regione.abruzzo.it' },
+      { name: 'Regione Abruzzo', logo: 'sponsors/provincia-pescara.png',  url: 'https://www.regione.abruzzo.it' },
       { name: 'Biblos',          logo: 'sponsors/logo-biblos.png',           url: 'https://www.bibloservice.com' },
       { name: 'B-Link',          logo: 'sponsors/logo-b-link.png',           url: 'https://www.b-link.it' },
-      { name: 'Regione Abruzzo', logo: 'sponsors/logo-regione-abruzzo.svg',  url: 'https://www.regione.abruzzo.it' },
     ],
   },
   cork: {
@@ -90,6 +93,31 @@ const HOSTS = {
     logo:     'logos/oviedo.svg',
     sponsors: [],
   },
+  crete: {
+    name:     'University of Crete',
+    subtitle: 'Heraklion, Greece',
+    logo:     'logos/crete.svg',
+    sponsors: [],
+  },
+};
+
+/* ── Partner universitari ────────────────────────
+   Ogni chiave DEVE corrispondere a un id in CAMERAS.
+   logo : percorso o URL del logo da mostrare nell'header
+   abbr : sigla di fallback se il logo non si carica
+   city : etichetta sotto il logo
+   ─────────────────────────────────────────────── */
+const PARTNERS = {
+  uda:       { logo: 'https://www.unich.it/sites/default/files/logouda_bordooro_bis.png', abbr: 'UDA',  city: "D'ANNUNZIO" },
+  cork:      { logo: 'logos/mtu.svg',       abbr: 'MTU',  city: 'CORK'       },
+  skovde:    { logo: 'logos/skovde.svg',     abbr: 'HiS',  city: 'SKÖVDE'     },
+  mikkeli:   { logo: 'logos/xamk.svg',    abbr: 'SEF',  city: 'MIKKELI'    },
+  rouen:     { logo: 'logos/rouen.svg',      abbr: 'URO',  city: 'ROUEN'      },
+  karlsruhe: { logo: 'logos/karlsruhe.svg',  abbr: 'HKA',  city: 'KARLSRUHE'  },
+  lasi:      { logo: 'logos/lasi.svg',       abbr: 'TUIA', city: 'IAȘI'       },
+  sofia:     { logo: 'logos/sofia.svg',      abbr: 'MUS',  city: 'SOFIA'      },
+  oviedo:    { logo: 'logos/oviedo.svg',     abbr: 'UOV',  city: 'OVIEDO'     },
+  crete:     { logo: 'logos/crete.svg',      abbr: 'UOC',  city: 'CRETE'      },
 };
 
 /* ── Messaggi ticker footer ─────────────────────── */
@@ -97,7 +125,7 @@ const TICKER_MESSAGES = [
   'Benvenuti nella Rete UNIGATE — Connettere le università europee dal campus di Chieti · Pescara',
   'Progetto UNIGATE — Cooperazione accademica e mobilità internazionale',
   'Università degli Studi «G. d\'Annunzio» — Chieti · Pescara',
-  'Rete UNIGATE: Cork · Skövde · Mikkeli · Rouen · Karlsruhe · Iași · Sofia · Oviedo',
+  'Rete UNIGATE: Cork · Skövde · Mikkeli · Rouen · Karlsruhe · Iași · Sofia · Oviedo · Crete',
 ];
 
 /* ── Parametri layout ────────────────────────────

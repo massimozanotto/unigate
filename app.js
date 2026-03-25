@@ -234,14 +234,15 @@ function buildPartnerLogos() {
     card.setAttribute('data-state', 'loading');
     card.title = cam.label;
 
-    const logoSrc = cam.logo || `logos/${cam.id}.svg`;
+    const partner = PARTNERS?.[cam.id] || {};
+    const logoSrc = partner.logo || cam.logo || `logos/${cam.id}.svg`;
+    const abbr    = partner.abbr || cam.id.slice(0, 3).toUpperCase();
     card.innerHTML = `
       <div class="partner-logo-area d-flex align-items-center justify-content-center">
         <img src="${logoSrc}" alt="${cam.id}"
              onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
-        <span class="partner-abbr-lg" style="display:none">${cam.id.slice(0, 3).toUpperCase()}</span>
+        <span class="partner-abbr-lg" style="display:none">${abbr}</span>
       </div>
-      <span class="partner-city-label">${cam.id.toUpperCase()}</span>
       <span class="partner-dot"></span>
     `;
     container.appendChild(card);
@@ -635,6 +636,15 @@ function buildSponsors() {
   const logos = document.createElement('div');
   logos.className = 'sponsor-logos';
   row.appendChild(logos);
+
+  const ingeniumItem = document.createElement('div');
+  ingeniumItem.className = 'sponsor-item';
+  const ingeniumImg = document.createElement('img');
+  ingeniumImg.src       = 'logos/ingenium-logo.svg';
+  ingeniumImg.alt       = 'Ingenium';
+  ingeniumImg.className = 'ingenium-logo';
+  ingeniumItem.appendChild(ingeniumImg);
+  logos.appendChild(ingeniumItem);
 
   sponsors.forEach(s => {
     const item = document.createElement('div');
